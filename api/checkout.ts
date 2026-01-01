@@ -1,6 +1,29 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { prisma } from './_lib/prisma'
-import { sendLineNotification } from './_lib/lineNotify'
+import { PrismaClient } from '@prisma/client'
+import { messagingApi } from '@line/bot-sdk'
+
+const prisma = new PrismaClient()
+const { MessagingApiClient } = messagingApi
+
+async function sendLineNotification(message: string): Promise<void> {
+  const channelAccessToken = process.env.LINE_CHANNEL_ACCESS_TOKEN
+  const adminUserId = process.env.LINE_ADMIN_USER_ID
+
+  if (!channelAccessToken || !adminUserId) {
+    console.log('LINE notification skipped: credentials not configured')
+    return
+  }
+
+  try {
+    const client = new MessagingApiClient({ channelAccessToken })
+    await client.pushMessage({
+      to: adminUserId,
+      messages: [{ type: 'text', text: message }],
+    })
+  } catch (error) {
+    console.error('Failed to send LINE notification:', error)
+  }
+}
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
