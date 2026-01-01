@@ -1,4 +1,9 @@
 {
   "buildCommand": "prisma generate && prisma db push && npm run build",
-  "framework": "vite"
+  "framework": "vite",
+  "functions": {
+    "api/**/*.ts": {
+      "includeFiles": "api/_lib/**"
+    }
+  }
 }
