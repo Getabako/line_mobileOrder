@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { prisma } from '../../lib/prisma'
-import { sendLineNotification } from '../../lib/lineNotify'
+import { prisma } from '../_lib/prisma'
+import { sendLineNotification } from '../_lib/lineNotify'
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'GET') {
