@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id          String       @id @default(uuid())
+  lineUserId  String       @unique
+  displayName String?
+  pictureUrl  String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  orders      Order[]
+  staffCalls  StaffCall[]
+}
+
+model MenuItem {
+  id          String      @id @default(uuid())
+  name        String
+  description String?
+  price       Int
+  category    String
+  imageUrl    String?
+  available   Boolean     @default(true)
+  sortOrder   Int         @default(0)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  orderItems  OrderItem[]
+}
+
+model Order {
+  id          String      @id @default(uuid())
+  tableNumber String
+  userId      String
+  user        User        @relation(fields: [userId], references: [id])
+  status      String      @default("PENDING")
+  totalAmount Int
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  items       OrderItem[]
+}
+
+model OrderItem {
+  id         String   @id @default(uuid())
+  orderId    String
+  order      Order    @relation(fields: [orderId], references: [id])
+  menuItemId String
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
+  name       String
+  price      Int
+  quantity   Int
+}
+
+model StaffCall {
+  id          String   @id @default(uuid())
+  tableNumber String
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  reason      String
+  status      String   @default("PENDING")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
